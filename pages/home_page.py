@@ -8,6 +8,7 @@ class HomePage(BasePage):
         self.__LOGOUT_BUTTON = self.page.locator("#logout-button")
         self.__LATEST_DEALS_SECTION = self.page.get_by_role("region", name="Latest deals")
         self.__RADIANT_REFLECTION_CAP = (self.__LATEST_DEALS_SECTION.get_by_role("link", name="Radiant Reflection Cap"))
+        self.__OPEN_REGISTER_PAGE_BUTTON = self.page.locator("#register-page-button")
 
 
 
@@ -25,4 +26,8 @@ class HomePage(BasePage):
 
     def open_radiant_reflection_cap(self):
         self.__RADIANT_REFLECTION_CAP.click()
+
+    # Registration page
+    def open_register(self):
+        self.__OPEN_REGISTER_PAGE_BUTTON.click()
 

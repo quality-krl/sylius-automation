@@ -1,0 +1,5 @@
+PRODUCT_CODE = "Apollo_T_Shirt"
+NON_EXISTING_VARIANT = ("/api/v2/shop/product-variants/THIS_VARIANT_DOES_NOT_EXIST")
+NON_EXISTING_ITEM_ID = 999999999
+PRODUCT_NAME = "Apollo T-Shirt"
+NON_EXISTING_PRODUCT_CODE = "This_Product_Does_Not_Exist"

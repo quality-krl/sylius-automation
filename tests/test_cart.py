@@ -1,4 +1,5 @@
 from config.config_reader import ConfigReader
+from pages import home_page, product_page, cart_page
 from pages.home_page import HomePage
 from pages.login_page import LoginPage
 from pages.product_page import ProductPage
@@ -38,3 +39,34 @@ class TestCartPage:
         cart_page = CartPage(page)
         expect(cart_page.get_added_message()).to_contain_text("Item has been added to cart")
         expect(cart_page.get_product_by_name("Radiant Reflection Cap")).to_be_visible()
+
+    def test_correct_quantity(self, page):
+        home_page = HomePage(page)
+        home_page.open()
+        home_page.open_radiant_reflection_cap()
+
+        product_page = ProductPage(page)
+        product_page.add_to_cart()
+
+        cart_page = CartPage(page)
+        cart_page.set_quantity(2)
+
+        expect(cart_page.get_current_quantity()).to_have_value("2")
+        expect(cart_page.get_total_price("Radiant Reflection Cap")).to_contain_text("€125.88")
+
+    def test_remove_product(self, page):
+        home_page = HomePage(page)
+        home_page.open()
+        home_page.open_radiant_reflection_cap()
+
+        product_page = ProductPage(page)
+        product_page.add_to_cart()
+        product_name = "Radiant Reflection Cap"
+
+        cart_page = CartPage(page)
+        cart_page.remove_product(product_name)
+
+        expect(
+            cart_page.get_product_by_name(product_name)
+        ).to_have_count(0)
+        expect(cart_page.get_empty_cart_message()).to_contain_text("Your cart is empty")
