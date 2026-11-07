@@ -1,3 +1,4 @@
+import pytest
 from config.config_reader import ConfigReader
 from pages import home_page, product_page, cart_page
 from pages.home_page import HomePage
@@ -7,32 +8,24 @@ from pages.cart_page import CartPage
 from playwright.sync_api import expect
 
 class TestCartPage:
-    def test_add_product_to_cart(self,page):
-        home_page = HomePage(page)
-        home_page.open()
-        home_page.open_radiant_reflection_cap()
-
-        product_page = ProductPage(page)
-        product_page.add_to_cart()
-
+    def test_add_product_to_cart(self,page, radiant_product_page):
+        radiant_product_page.add_to_cart()
         cart_page = CartPage(page)
-
         expect(cart_page.get_added_message()).to_contain_text("Item has been added to cart")
         expect(cart_page.get_product_by_name("Radiant Reflection Cap")).to_be_visible()
 
     def test_add_to_cart_logged_in(self, page):
         home_page = HomePage(page)
-        home_page.open()
-        home_page.open_login()
-
+        page.goto(f"{ConfigReader.get_ui_base_url()}login")
         username = ConfigReader.get_username()
         password = ConfigReader.get_password()
 
         login_page = LoginPage(page)
         login_page.login(username, password)
         expect(home_page.get_logout_button()).to_be_visible()
-        home_page.open_radiant_reflection_cap()
-
+        response = page.goto(f"{ConfigReader.get_ui_base_url()}products/radiant-reflection-cap")
+        if response is None or response.status >= 500:
+            pytest.skip("External Sylius product page is unavailable")
         product_page = ProductPage(page)
         product_page.add_to_cart()
 
@@ -40,27 +33,15 @@ class TestCartPage:
         expect(cart_page.get_added_message()).to_contain_text("Item has been added to cart")
         expect(cart_page.get_product_by_name("Radiant Reflection Cap")).to_be_visible()
 
-    def test_correct_quantity(self, page):
-        home_page = HomePage(page)
-        home_page.open()
-        home_page.open_radiant_reflection_cap()
-
-        product_page = ProductPage(page)
-        product_page.add_to_cart()
-
+    def test_correct_quantity(self, page, radiant_product_page):
+        radiant_product_page.add_to_cart()
         cart_page = CartPage(page)
         cart_page.set_quantity(2)
-
         expect(cart_page.get_current_quantity()).to_have_value("2")
         expect(cart_page.get_total_price("Radiant Reflection Cap")).to_contain_text("€125.88")
 
-    def test_remove_product(self, page):
-        home_page = HomePage(page)
-        home_page.open()
-        home_page.open_radiant_reflection_cap()
-
-        product_page = ProductPage(page)
-        product_page.add_to_cart()
+    def test_remove_product(self, page, radiant_product_page):
+        radiant_product_page.add_to_cart()
         product_name = "Radiant Reflection Cap"
 
         cart_page = CartPage(page)

@@ -1,12 +1,13 @@
 from pages.base_page import BasePage
-from playwright.sync_api import expect
-
 
 class ProductPage(BasePage):
     def __init__(self, page):
         super().__init__(page)
 
         self.__ADD_TO_CART_BUTTON = self.page.locator("#add-to-cart-button")
+
+    def open_product(self, product_slug):
+        return self.page.goto(f"{self.base_url}products/{product_slug}")
 
 
     def add_to_cart(self):

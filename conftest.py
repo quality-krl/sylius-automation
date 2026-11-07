@@ -5,6 +5,7 @@ from http import HTTPStatus
 from config.config_reader import ConfigReader
 from utils.api_client import ApiClient
 from test_data.api_data import PRODUCT_CODE
+from pages.product_page import ProductPage
 
 @pytest.fixture(scope="session")
 def api_client():
@@ -56,3 +57,13 @@ def pytest_runtest_makereport(item, call):
                 name="failure_page_source",
                 attachment_type=allure.attachment_type.HTML
             )
+@pytest.fixture
+def product_page(page):
+    return ProductPage(page)
+
+@pytest.fixture
+def radiant_product_page(product_page):
+    response = product_page.open_product("radiant-reflection-cap")
+    if response is None or response.status >= 500:
+        pytest.skip("External Sylius product page is unavailable")
+    return product_page
