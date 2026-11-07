@@ -16,7 +16,9 @@ def api_client():
 def cart_token(api_client):
     payload = {
         "channelCode": "WEB",
-        "localeCode": "en_US"
+        "localeCode": "en_US",
+        "email": "john.doe@example.com"
+
     }
     response = api_client.post("shop/orders", payload)
     assert response.status_code == HTTPStatus.CREATED

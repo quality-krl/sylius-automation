@@ -1,6 +1,6 @@
 import pytest
+
 from config.config_reader import ConfigReader
-from pages import home_page, product_page, cart_page
 from pages.home_page import HomePage
 from pages.login_page import LoginPage
 from pages.product_page import ProductPage
