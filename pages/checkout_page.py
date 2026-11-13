@@ -167,13 +167,8 @@ class CheckoutPage(BasePage):
         )
 
     def get_address_validation_errors(self):
-        visible_errors = self.page.locator(
-            ".invalid-feedback:visible"
-        )
-
-        visible_errors.first.wait_for(
-            state="visible"
-        )
+        visible_errors = self.page.locator(".invalid-feedback:visible")
+        visible_errors.first.wait_for(state="visible")
 
         if DemoHelper.is_enabled():
             DemoHelper.show_result(

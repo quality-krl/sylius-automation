@@ -1,5 +1,5 @@
 import pytest
-
+import allure
 
 from pages.home_page import HomePage
 from pages.login_page import LoginPage
@@ -7,7 +7,10 @@ from config.config_reader import ConfigReader
 from playwright.sync_api import expect
 from test_data.login_data import INVALID_USERNAME, INVALID_PASSWORD
 
+@allure.feature("Login UI")
 class TestLoginPage:
+    @allure.story("Successful authentication")
+    @allure.title("Login successfully with username variant")
     @pytest.mark.parametrize("username",
     [
         ConfigReader.get_username(),
@@ -36,6 +39,8 @@ class TestLoginPage:
 
         expect(home_page.get_logout_button()).to_be_visible()
 
+    @allure.story("Authentication validation")
+    @allure.title("Reject invalid login credentials")
     @pytest.mark.parametrize("username,password",
         [
             (INVALID_USERNAME, ConfigReader.get_password()),
@@ -67,6 +72,8 @@ class TestLoginPage:
 
         expect(login_page.get_error_message()).to_contain_text("Invalid")
 
+    @allure.story("Session management")
+    @allure.title("Logout successfully")
     def test_logout(self, page):
         username = ConfigReader.get_username()
         password = ConfigReader.get_password()

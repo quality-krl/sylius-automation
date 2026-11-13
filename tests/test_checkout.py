@@ -1,12 +1,15 @@
 import pytest
+import allure
 from playwright.sync_api import expect
 
 
 from pages.cart_page import CartPage
 from pages.checkout_page import CheckoutPage
 
-
+@allure.feature("Checkout UI")
 class TestCheckoutPage:
+    @allure.story("Guest checkout")
+    @allure.title("Complete guest checkout with payment method: {payment_method}")
     @pytest.mark.parametrize("payment_method",
         [
             "cash_on_delivery",
@@ -48,6 +51,8 @@ class TestCheckoutPage:
         expect(checkout_page.get_thank_you_title()).to_be_visible()
         assert "order/thank-you" in page.url
 
+    @allure.story("Address validation")
+    @allure.title("Require mandatory address fields during checkout")
     def test_checkout_required_address_fields(self, page, radiant_product_page):
         radiant_product_page.add_to_cart()
         cart_page = CartPage(page)
@@ -65,6 +70,8 @@ class TestCheckoutPage:
         assert "Please enter postcode." in errors
         assert "checkout/address" in page.url
 
+    @allure.story("Address validation")
+    @allure.title("Reject an invalid email during checkout")
     def test_checkout_invalid_email(self, page, radiant_product_page):
         radiant_product_page.add_to_cart()
         cart_page = CartPage(page)

@@ -1,4 +1,5 @@
 import pytest
+import allure
 from faker import Faker
 from playwright.sync_api import expect
 
@@ -9,7 +10,10 @@ from pages.account_page import AccountPage
 
 fake = Faker()
 
+@allure.feature("Registration UI")
 class TestRegistration:
+    @allure.story("Successful registration")
+    @allure.title("Register a new user successfully")
     def test_register_valid_user(self, page):
         first_name = fake.first_name()
         last_name = fake.last_name()
@@ -29,6 +33,8 @@ class TestRegistration:
         account_page = AccountPage(page)
         expect(account_page.get_success_message()).to_contain_text("Thank you for registering.")
 
+    @allure.story("Required field validation")
+    @allure.title("Validate required registration fields")
     @pytest.mark.parametrize("first_name,last_name,email,error_field,expected_message",
         [
             ("", fake.last_name(), fake.email(), "first_name", "Please enter your first name."),
@@ -60,6 +66,8 @@ class TestRegistration:
             error_locator = register_page.get_email_error()
         expect(error_locator).to_contain_text(expected_message)
 
+    @allure.story("Name validation")
+    @allure.title("Reject names below the minimum length")
     @pytest.mark.parametrize("first_name,last_name,email,error_field,expected_message",
     [
         ("A", fake.last_name(), fake.email(), "first_name", "First name must be at least 2 characters long."),
@@ -87,6 +95,8 @@ class TestRegistration:
 
         expect(error_locator).to_contain_text(expected_message)
 
+    @allure.story("Password validation")
+    @allure.title("Require a password during registration")
     def test_register_password_required(self, page):
         first_name = fake.first_name()
         last_name = fake.last_name()
@@ -105,6 +115,8 @@ class TestRegistration:
 
         expect(register_page.get_password_error()).to_contain_text("Please enter your password.")
 
+    @allure.story("Password validation")
+    @allure.title("Reject a password below the minimum length")
     def test_register_password_min_length(self, page):
         first_name = fake.first_name()
         last_name = fake.last_name()
@@ -122,6 +134,8 @@ class TestRegistration:
 
         expect(register_page.get_password_error()).to_contain_text("Password must be at least 4 characters long.")
 
+    @allure.story("Password validation")
+    @allure.title("Reject mismatched passwords")
     @pytest.mark.parametrize("password,verify_password",
     [
         ("Test12!", "Test1!"),
@@ -150,6 +164,8 @@ class TestRegistration:
 
         expect(register_page.get_password_error()).to_contain_text("The entered passwords don't match")
 
+    @allure.story("Email validation")
+    @allure.title("Reject invalid email format")
     @pytest.mark.parametrize("email",
     [
         "test",
@@ -182,6 +198,8 @@ class TestRegistration:
 
         expect(register_page.get_email_error()).to_contain_text("This email is invalid.")
 
+    @allure.story("Password boundary validation")
+    @allure.title("Accept a password at the minimum valid boundary")
     def test_register_password_min_boundary_valid(self, page):
         first_name = fake.first_name()
         last_name = fake.last_name()
@@ -200,6 +218,8 @@ class TestRegistration:
         account_page = AccountPage(page)
         expect(account_page.get_success_message()).to_contain_text("Thank you for registering.")
 
+    @allure.story("Email uniqueness")
+    @allure.title("Reject registration with an already used email")
     def test_register_duplicate_email(self, page):
         first_name = fake.first_name()
         last_name = fake.last_name()

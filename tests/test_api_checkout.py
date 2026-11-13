@@ -1,8 +1,11 @@
 import pytest
+import allure
 from http import HTTPStatus
 
-
+@allure.feature("Checkout API")
 class TestCheckoutApi:
+    @allure.story("Checkout flow")
+    @allure.title("Select shipping and payment successfully")
     def test_select_shipping_and_payment(self, api_client, cart_token, default_product_variant):
         order_endpoint = f"shop/orders/{cart_token}"
         items_endpoint = f"{order_endpoint}/items"
@@ -70,6 +73,8 @@ class TestCheckoutApi:
         payment_body = payment_response.json()
         assert payment_body["checkoutState"] == "payment_selected"
 
+    @allure.story("Shipping validation")
+    @allure.title("Reject an invalid shipping method")
     def test_invalid_shipping_method(self, api_client, cart_token, default_product_variant):
         order_endpoint = f"shop/orders/{cart_token}"
         items_endpoint = f"{order_endpoint}/items"
@@ -111,10 +116,9 @@ class TestCheckoutApi:
         shipping_response = api_client.patch(shipment_endpoint, shipping_payload)
         assert shipping_response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
-    @pytest.mark.xfail(
-        reason="Sylius returns 500 instead of a controlled 4xx response when payment is selected before shipping",
-        strict=False
-    )
+    @allure.story("Checkout state validation")
+    @allure.title("Prevent payment selection before shipping")
+    @pytest.mark.xfail(reason="Sylius returns 500 instead of a controlled 4xx response when payment is selected before shipping", strict=False)
     def test_cannot_select_payment_before_shipping(self, api_client, cart_token, default_product_variant):
         order_endpoint = f"shop/orders/{cart_token}"
         items_endpoint = f"{order_endpoint}/items"
@@ -157,6 +161,8 @@ class TestCheckoutApi:
         payment_response = api_client.patch(payment_endpoint, payment_payload)
         assert payment_response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
+    @allure.story("Payment validation")
+    @allure.title("Reject an invalid payment method")
     def test_invalid_payment_method(self, api_client, cart_token, default_product_variant):
         order_endpoint = f"shop/orders/{cart_token}"
         items_endpoint = f"{order_endpoint}/items"

@@ -102,7 +102,7 @@ class TestProductsApi:
         assert response.text == ""
 
     @allure.story("HTTP behavior")
-    @allure.title("Return an empty collection for an out-of-range page")
+    @allure.title("Return supported methods for products endpoint")
     def test_products_options_request(self, api_client):
         response = api_client.options("shop/products")
         assert response.status_code == HTTPStatus.NO_CONTENT
@@ -113,7 +113,7 @@ class TestProductsApi:
         assert "OPTIONS" in allowed_methods
 
     @allure.story("HTTP behavior")
-    @allure.title("Return supported methods for products endpoint")
+    @allure.title("Return an empty collection for an out-of-range page")
     def test_get_products_out_of_range_page(self, api_client):
         params = {"page": 999}
         response = api_client.get("shop/products", params=params)

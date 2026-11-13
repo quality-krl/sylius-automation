@@ -1,0 +1,16 @@
+{
+  "name": "Sylius Automation Report",
+  "output": "./allure-report",
+  "plugins": {
+    "awesome": {
+      "options": {
+        "reportName": "Sylius Automation Report",
+        "reportLanguage": "en",
+        "groupBy": [
+          "feature",
+          "story"
+        ]
+      }
+    }
+  }
+}

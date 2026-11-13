@@ -60,7 +60,7 @@ class TestCartApi:
         final_items = final_cart_body["items"]
         assert len(final_items) == 0
 
-    @allure.story("Cart validation")
+    @allure.story("Quantity validation")
     @allure.title("Reject invalid cart item quantity: {invalid_quantity}")
     @pytest.mark.parametrize("invalid_quantity",
     [
@@ -89,7 +89,7 @@ class TestCartApi:
         items = cart_body["items"]
         assert len(items) == 0
 
-    @allure.story("Cart validation")
+    @allure.story("Product variant validation")
     @allure.title("Reject a non-existing product variant")
     def test_add_non_existing_variant(self, api_client, cart_token):
         items_endpoint = f"shop/orders/{cart_token}/items"
@@ -111,7 +111,7 @@ class TestCartApi:
         cart_body = cart_response.json()
         assert len(cart_body["items"]) == 0
 
-    @allure.story("Cart validation")
+    @allure.story("Quantity validation")
     @allure.title("Reject invalid quantity when updating a cart item")
     def test_update_item_with_invalid_quantity(self, api_client, cart_token, default_product_variant):
         cart_endpoint = f"shop/orders/{cart_token}"
@@ -163,7 +163,7 @@ class TestCartApi:
         assert error_body["status"] == HTTPStatus.NOT_FOUND
         assert error_body["detail"] == "Not Found"
 
-    @allure.story("Cart validation")
+    @allure.story("Request validation")
     @allure.title("Reject cart item request without a product variant")
     def test_add_item_without_product_variant(self, api_client, cart_token):
         items_endpoint = f"shop/orders/{cart_token}/items"

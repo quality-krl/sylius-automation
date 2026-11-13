@@ -1,4 +1,5 @@
 import pytest
+import allure
 from playwright.sync_api import expect
 
 from config.config_reader import ConfigReader
@@ -7,14 +8,18 @@ from pages.login_page import LoginPage
 from pages.product_page import ProductPage
 from pages.cart_page import CartPage
 
-
+@allure.feature("Cart UI")
 class TestCartPage:
+    @allure.story("Cart item addition")
+    @allure.title("Add a product to the cart successfully")
     def test_add_product_to_cart(self, page, radiant_product_page):
         radiant_product_page.add_to_cart()
         cart_page = CartPage(page)
         expect(cart_page.get_added_message()).to_contain_text("Item has been added to cart")
         expect(cart_page.get_product_by_name("Radiant Reflection Cap")).to_be_visible()
 
+    @allure.story("Authenticated cart")
+    @allure.title("Add a product to the cart while logged in")
     def test_add_to_cart_logged_in(self, page):
         home_page = HomePage(page)
         page.goto(f"{ConfigReader.get_ui_base_url()}login")
@@ -34,6 +39,8 @@ class TestCartPage:
         expect(cart_page.get_added_message()).to_contain_text("Item has been added to cart")
         expect(cart_page.get_product_by_name("Radiant Reflection Cap")).to_be_visible()
 
+    @allure.story("Cart quantity management")
+    @allure.title("Update product quantity and total price")
     def test_correct_quantity(self, page, radiant_product_page):
         radiant_product_page.add_to_cart()
         cart_page = CartPage(page)
@@ -43,6 +50,8 @@ class TestCartPage:
         expected_total = initial_price * 2
         expect(cart_page.get_total_price("Radiant Reflection Cap")).to_contain_text(f"€{expected_total:.2f}")
 
+    @allure.story("Cart item removal")
+    @allure.title("Remove a product and display an empty cart")
     def test_remove_product(self, page, radiant_product_page):
         radiant_product_page.add_to_cart()
         product_name = "Radiant Reflection Cap"
