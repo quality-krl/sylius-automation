@@ -1,16 +1,15 @@
 import pytest
 from faker import Faker
+from playwright.sync_api import expect
 
 from config.config_reader import ConfigReader
 from pages.home_page import HomePage
 from pages.register_page import RegisterPage
 from pages.account_page import AccountPage
-from playwright.sync_api import expect
 
 fake = Faker()
 
 class TestRegistration:
-    # Positive Tests
     def test_register_valid_user(self, page):
         first_name = fake.first_name()
         last_name = fake.last_name()
@@ -56,7 +55,7 @@ class TestRegistration:
         if error_field == "first_name":
             error_locator = register_page.get_first_name_error()
         elif error_field == "last_name":
-                error_locator = register_page.get_last_name_error()
+            error_locator = register_page.get_last_name_error()
         elif error_field == "email":
             error_locator = register_page.get_email_error()
         expect(error_locator).to_contain_text(expected_message)

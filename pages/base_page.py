@@ -1,5 +1,6 @@
 from config.config_reader import ConfigReader
 
+
 class BasePage:
     def __init__(self, page):
         self.page = page

@@ -1,6 +1,7 @@
 import pytest
 from http import HTTPStatus
 
+
 class TestCheckoutApi:
     def test_select_shipping_and_payment(self, api_client, cart_token, default_product_variant):
         order_endpoint = f"shop/orders/{cart_token}"
@@ -163,7 +164,7 @@ class TestCheckoutApi:
             "productVariant": default_product_variant,
             "quantity": 1
         }
-        item_response = api_client.post( items_endpoint, item_payload)
+        item_response = api_client.post(items_endpoint, item_payload)
         assert item_response.status_code == HTTPStatus.CREATED
 
         address_payload = {
@@ -207,7 +208,3 @@ class TestCheckoutApi:
         payment_payload = {"paymentMethod": "/api/v2/shop/payment-methods/invalid_method"}
         payment_response = api_client.patch(payment_endpoint, payment_payload)
         assert payment_response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
-
-
-
-

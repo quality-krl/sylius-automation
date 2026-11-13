@@ -1,6 +1,6 @@
 import pytest
 
-from pages import home_page
+
 from pages.home_page import HomePage
 from pages.login_page import LoginPage
 from config.config_reader import ConfigReader
@@ -8,13 +8,12 @@ from playwright.sync_api import expect
 from test_data.login_data import INVALID_USERNAME, INVALID_PASSWORD
 
 class TestLoginPage:
-    # Positive tests
     @pytest.mark.parametrize("username",
     [
         ConfigReader.get_username(),
         f" {ConfigReader.get_username()}",
         f"{ConfigReader.get_username()} ",
-        (ConfigReader.get_username().upper())
+        ConfigReader.get_username().upper()
     ],
     ids=[
         "valid_username",
@@ -37,7 +36,6 @@ class TestLoginPage:
 
         expect(home_page.get_logout_button()).to_be_visible()
 
-    # Negative tests
     @pytest.mark.parametrize("username,password",
         [
             (INVALID_USERNAME, ConfigReader.get_password()),

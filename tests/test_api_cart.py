@@ -2,7 +2,7 @@ import pytest
 import allure
 from http import HTTPStatus
 
-from test_data.api_data import (NON_EXISTING_VARIANT, NON_EXISTING_ITEM_ID)
+from test_data.api_data import NON_EXISTING_VARIANT, NON_EXISTING_ITEM_ID
 
 @allure.feature("Cart API")
 class TestCartApi:
@@ -75,8 +75,9 @@ class TestCartApi:
             "quantity": invalid_quantity
         }
         item_response = api_client.post(items_endpoint, item_payload)
-        error_body = item_response.json()
         assert item_response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+
+        error_body = item_response.json()
         assert error_body["status"] == HTTPStatus.UNPROCESSABLE_ENTITY
         assert error_body["violations"][0]["propertyPath"] == "quantity"
         assert error_body["violations"][0]["message"] == "Quantity must be between 1 and 9999."
@@ -96,12 +97,10 @@ class TestCartApi:
             "productVariant": NON_EXISTING_VARIANT,
             "quantity": 1
         }
-        item_response = api_client.post(
-            items_endpoint,
-            item_payload
-        )
-        error_body = item_response.json()
+        item_response = api_client.post(items_endpoint, item_payload)
         assert item_response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+
+        error_body = item_response.json()
         assert error_body["status"] == HTTPStatus.UNPROCESSABLE_ENTITY
         assert error_body["violations"][0]["message"] == ("The product variant THIS_VARIANT_DOES_NOT_EXIST does not exist.")
 
@@ -133,21 +132,17 @@ class TestCartApi:
         assert items[0]["quantity"] == 1
 
         item = items[0]
-        item_endpoint = (
-            f"shop/orders/{cart_token}/items/{item['id']}"
-        )
+        item_endpoint = f"shop/orders/{cart_token}/items/{item['id']}"
         update_payload = {
             "quantity": 0
         }
-        update_response = api_client.patch(
-            item_endpoint,
-            update_payload
-        )
-        error_body = update_response.json()
+        update_response = api_client.patch(item_endpoint, update_payload)
         assert update_response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+
+        error_body = update_response.json()
         assert error_body["status"] == HTTPStatus.UNPROCESSABLE_ENTITY
         assert error_body["violations"][0]["propertyPath"] == "quantity"
-        assert error_body["violations"][0]["message"] == ("Quantity must be between 1 and 9999.")
+        assert error_body["violations"][0]["message"] == "Quantity must be between 1 and 9999."
 
         verify_response = api_client.get(cart_endpoint)
         assert verify_response.status_code == HTTPStatus.OK
@@ -160,11 +155,11 @@ class TestCartApi:
     @allure.story("Cart item deletion")
     @allure.title("Return 404 when deleting a non-existing cart item")
     def test_delete_non_existing_item(self, api_client, cart_token):
-        item_endpoint = (f"shop/orders/{cart_token}/items/{NON_EXISTING_ITEM_ID}")
+        item_endpoint = f"shop/orders/{cart_token}/items/{NON_EXISTING_ITEM_ID}"
         delete_response = api_client.delete(item_endpoint)
+        assert delete_response.status_code == HTTPStatus.NOT_FOUND
 
         error_body = delete_response.json()
-        assert delete_response.status_code == HTTPStatus.NOT_FOUND
         assert error_body["status"] == HTTPStatus.NOT_FOUND
         assert error_body["detail"] == "Not Found"
 
@@ -176,10 +171,11 @@ class TestCartApi:
             "quantity": 1
         }
         item_response = api_client.post(items_endpoint, item_payload)
-        error_body = item_response.json()
         assert item_response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+
+        error_body = item_response.json()
         assert error_body["status"] == HTTPStatus.UNPROCESSABLE_ENTITY
-        assert error_body["detail"] == ("Request does not have the following required fields specified: productVariant.")
+        assert error_body["detail"] == "Request does not have the following required fields specified: productVariant."
 
         verify_response = api_client.get(f"shop/orders/{cart_token}")
         assert verify_response.status_code == HTTPStatus.OK

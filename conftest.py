@@ -1,5 +1,6 @@
 import pytest
 import allure
+import os
 
 from http import HTTPStatus
 from config.config_reader import ConfigReader
@@ -17,8 +18,6 @@ def cart_token(api_client):
     payload = {
         "channelCode": "WEB",
         "localeCode": "en_US",
-        "email": "john.doe@example.com"
-
     }
     response = api_client.post("shop/orders", payload)
     assert response.status_code == HTTPStatus.CREATED
@@ -42,23 +41,35 @@ def pytest_runtest_makereport(item, call):
 
     if report.when == "call" and report.failed:
         page = item.funcargs.get("page")
-        if page:
-            screenshot = page.screenshot(full_page=True)
-            allure.attach(
-                screenshot,
-                name="failure_screenshot",
-                attachment_type=allure.attachment_type.PNG
-            )
-            allure.attach(
-                page.url,
-                name="failure_url",
-                attachment_type=allure.attachment_type.TEXT
-            )
-            allure.attach(
-                page.content(),
-                name="failure_page_source",
-                attachment_type=allure.attachment_type.HTML
-            )
+
+        if page and not page.is_closed():
+            try:
+                allure.attach(
+                    page.screenshot(),
+                    name="failure-screenshot",
+                    attachment_type=allure.attachment_type.PNG
+                )
+            except Exception:
+                pass
+
+            try:
+                allure.attach(
+                    page.url,
+                    name="failure-url",
+                    attachment_type=allure.attachment_type.TEXT
+                )
+            except Exception:
+                pass
+
+            try:
+                allure.attach(
+                    page.content(),
+                    name="failure-page-source",
+                    attachment_type=allure.attachment_type.HTML
+                )
+            except Exception:
+                pass
+
 @pytest.fixture
 def product_page(page):
     return ProductPage(page)
@@ -69,3 +80,22 @@ def radiant_product_page(product_page):
     if response is None or response.status >= 500:
         pytest.skip("External Sylius product page is unavailable")
     return product_page
+
+@pytest.fixture(scope="session")
+def browser_context_args(browser_context_args):
+    context_args = {
+        **browser_context_args
+    }
+
+    if os.getenv("DEMO_MODE") == "1":
+        context_args["viewport"] = {
+            "width": 1280,
+            "height": 720
+        }
+
+        context_args["record_video_size"] = {
+            "width": 1280,
+            "height": 720
+        }
+
+    return context_args

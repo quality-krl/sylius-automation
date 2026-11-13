@@ -1,3 +1,5 @@
+from utils.demo_helper import DemoHelper
+
 from pages.base_page import BasePage
 
 class ProductPage(BasePage):
@@ -9,10 +11,7 @@ class ProductPage(BasePage):
     def open_product(self, product_slug):
         return self.page.goto(f"{self.base_url}products/{product_slug}")
 
-
     def add_to_cart(self):
-        # Wait until Sylius Live Component is initialized before clicking.
-        # Without this wait, automation may click before the component is ready.
         self.page.wait_for_function(
             """
             () => {
@@ -28,4 +27,9 @@ class ProductPage(BasePage):
             }
             """
         )
-        self.__ADD_TO_CART_BUTTON.click()
+
+        DemoHelper.click(
+            self.page,
+            self.__ADD_TO_CART_BUTTON
+        )
+        self.page.wait_for_url("**/cart/")

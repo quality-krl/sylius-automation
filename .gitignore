@@ -2,5 +2,13 @@ __pycache__/
 *.pyc
 .pytest_cache/
 .venv/
+
+.idea/
+.env
+*.log
+
 allure-results/
 allure-report/
+demo-*/
+*.webm
+debug-next-full.png
