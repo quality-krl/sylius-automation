@@ -12,3 +12,6 @@ allure-report/
 demo-*/
 *.webm
 debug-next-full.png
+allure-results-api/
+allure-results-showcase/
+portfolio-media/
